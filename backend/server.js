@@ -36,3 +36,8 @@ app.get("/api/protected", protect, (req, res) => {
     user: req.user,
   });
 });
+
+
+const productRoutes = require("./routes/productRoutes");
+
+app.use("/api/products", productRoutes);
