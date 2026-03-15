@@ -1,22 +1,37 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const Cart = require("../models/Cart");
 const Product = require("../models/Product");
-const products = require("./products");
 
 dotenv.config();
 
-const seedProducts = async () => {
+const seedCart = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB connected for seeding");
+    console.log("MongoDB connected for Cart seeding");
 
-    // Delete existing products
-    await Product.deleteMany();
+    // Delete existing carts
+    await Cart.deleteMany();
 
-    // Insert demo products
-    await Product.insertMany(products);
+    // Fetch products
+    const products = await Product.find();
 
-    console.log("Products seeded successfully");
+    if (products.length === 0) {
+      console.log("No products found to add to cart");
+      process.exit();
+    }
+
+    // Create a demo cart using first 2 products
+    const cart = {
+      items: [
+        { product: products[0]._id, quantity: 1 },
+        { product: products[1]._id, quantity: 2 }
+      ]
+    };
+
+    await Cart.create(cart);
+
+    console.log("Cart seeded successfully");
     process.exit();
   } catch (err) {
     console.error(err);
@@ -24,4 +39,4 @@ const seedProducts = async () => {
   }
 };
 
-seedProducts();
+seedCart();

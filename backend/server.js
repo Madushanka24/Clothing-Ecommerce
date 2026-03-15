@@ -24,9 +24,7 @@ app.listen(PORT, () => {
 app.use(express.json());
 
 const authRoutes = require("./routes/authRoutes");
-
 app.use("/api/auth", authRoutes);
-
 
 const { protect } = require("./middleware/authMiddleware");
 
@@ -37,7 +35,8 @@ app.get("/api/protected", protect, (req, res) => {
   });
 });
 
-
 const productRoutes = require("./routes/productRoutes");
-
 app.use("/api/products", productRoutes);
+
+const cartRoutes = require("./routes/cartRoutes");
+app.use("/api/cart", cartRoutes);
