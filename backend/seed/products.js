@@ -40,20 +40,20 @@ const products = [
     sizes: ["S","M","L"]
   },
   {
-    name: "Running Shoes",
-    description: "Lightweight running shoes",
+    name: "Cargo Pants",
+    description: "Lightweight cargo pants",
     price: 60,
     image: "https://via.placeholder.com/150",
     category: "Men",
-    sizes: ["8","9","10","11"]
+    sizes: ["M","L","XL"]
   },
   {
-    name: "Sneakers",
-    description: "Stylish casual sneakers",
+    name: "Linen Shirt",
+    description: "Stylish Linen Shirts",
     price: 55,
     image: "https://via.placeholder.com/150",
     category: "Women",
-    sizes: ["6","7","8","9"]
+    sizes: ["S","M","L","XL"]
   },
   {
     name: "Kids Sandals",
