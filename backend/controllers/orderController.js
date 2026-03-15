@@ -46,17 +46,16 @@ exports.checkout = async (req, res) => {
 
 // Nodemailer function
 const sendOrderEmail = async (toEmail, order) => {
-  // Create transporter
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER, // your Gmail
-      pass: process.env.EMAIL_PASS, // app password
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
   });
 
   const itemsHtml = order.items.map(i => `
-    <li>${i.product} - Size: ${i.size} - Qty: ${i.quantity} - $${i.price}</li>
+    <li>${i.product.name} - Size: ${i.size} - Qty: ${i.quantity} - $${i.price}</li>
   `).join("");
 
   const mailOptions = {
@@ -66,7 +65,7 @@ const sendOrderEmail = async (toEmail, order) => {
     html: `
       <h2>Thank you for your order!</h2>
       <p>Order ID: ${order._id}</p>
-      <p>Order Date: ${order.orderDate}</p>
+      <p>Order Date: ${order.createdAt.toLocaleString()}</p>
       <ul>${itemsHtml}</ul>
       <p>Total: $${order.totalPrice}</p>
     `,

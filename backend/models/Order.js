@@ -12,6 +12,6 @@ const orderSchema = new mongoose.Schema({
   items: [orderItemSchema],
   totalPrice: { type: Number, required: true },
   orderDate: { type: Date, default: Date.now },
-});
+},{ timestamps: true });
 
 module.exports = mongoose.model("Order", orderSchema);
