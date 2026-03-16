@@ -11,7 +11,7 @@ const {
 // GET cart
 router.get("/", protect, getCart); // user cart
 // POST add item
-router.post("/", addToCart);
+router.post("/",protect,  addToCart);
 // PUT update item
 router.put("/:cartId", updateCartItem);
 // DELETE remove item
