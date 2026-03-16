@@ -22,20 +22,27 @@ function Products() {
   };
 
   const addToCart = async (productId) => {
-    try {
-      await API.post("/cart", {
-        productId: productId,
-        size: "M",
-        quantity: 1
-      });
+  try {
+    // Get existing cartId from localStorage (for guests)
+    const cartId = localStorage.getItem("cartId");
 
-      alert("Added to Cart");
+    // Call backend
+    const res = await API.post("/cart", {
+      productId,
+      size: "M",
+      quantity: 1,
+      cartId, // send existing cartId if exists
+    });
 
-    } catch (err) {
-      alert("Login required");
-      navigate("/login");
-    }
-  };
+    // Save returned cartId to localStorage
+    localStorage.setItem("cartId", res.data.cartId);
+
+    alert("Added to Cart");
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+};
 
   return (
     <>
