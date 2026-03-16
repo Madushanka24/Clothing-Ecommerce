@@ -15,7 +15,7 @@ function Products() {
   const fetchProducts = async () => {
     try {
       const res = await API.get("/products");
-      setProducts(res.data);
+      setProducts(res.data.products);
     } catch (err) {
       console.log(err);
     }
@@ -101,4 +101,4 @@ function Products() {
   );
 }
 
-export default Products;   // ✅ FIXED EXPORT NAME
+export default Products;   
