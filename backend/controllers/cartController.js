@@ -1,20 +1,24 @@
 const Cart = require("../models/Cart");
 
-// GET cart (by user or guest)
+// GET cart (for logged-in users or guest)
 exports.getCart = async (req, res) => {
   try {
     let cart;
+
     if (req.user) {
+      // Find cart by logged-in user
       cart = await Cart.findOne({ user: req.user._id }).populate("items.product");
-    } else {
-      // For guest, use cartId query param
-      cart = req.query.cartId
-        ? await Cart.findById(req.query.cartId).populate("items.product")
-        : null;
+    } else if (req.query.cartId) {
+      // Guest cart using cartId query param
+      cart = await Cart.findById(req.query.cartId).populate("items.product");
     }
 
-    if (!cart) return res.json({ items: [] });
+    if (!cart) {
+      return res.json({ items: [] }); // Return empty if no cart
+    }
+
     res.json(cart);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -29,18 +33,24 @@ exports.addToCart = async (req, res) => {
     let cart;
 
     if (req.user) {
+      // Find cart by user
       cart = await Cart.findOne({ user: req.user._id });
+
+      // Create cart if not exist
       if (!cart) {
         cart = await Cart.create({ user: req.user._id, items: [] });
       }
     } else {
-      // Guest user
-      cart = cartId
-        ? await Cart.findById(cartId)
-        : await Cart.create({ items: [] });
+      // Guest cart
+      if (cartId) {
+        cart = await Cart.findById(cartId);
+      }
+
+      if (!cart) {
+        cart = await Cart.create({ items: [] });
+      }
     }
 
-    // Convert quantity to number
     const qty = Number(quantity);
 
     // Check if item with same product & size exists
@@ -56,8 +66,8 @@ exports.addToCart = async (req, res) => {
 
     await cart.save();
 
-    // Populate product details before sending response
-    const populatedCart = await cart.populate("items.product");
+    const populatedCart = await Cart.findById(cart._id).populate("items.product");
+
     res.json(populatedCart);
 
   } catch (err) {
@@ -68,13 +78,13 @@ exports.addToCart = async (req, res) => {
 
 // UPDATE item quantity
 exports.updateCartItem = async (req, res) => {
-  const { itemId, quantity } = req.body;
+  const { quantity } = req.body;
 
   try {
     const cart = await Cart.findById(req.params.cartId);
     if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-    const item = cart.items.id(itemId);
+    const item = cart.items.id(req.params.itemId);
     if (!item) return res.status(404).json({ message: "Item not found" });
 
     item.quantity = Number(quantity);
