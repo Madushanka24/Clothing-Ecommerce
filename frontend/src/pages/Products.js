@@ -1,120 +1,104 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";  
 
 function Products() {
 
-  const [products,setProducts] = useState([])
-  const navigate = useNavigate()
+  const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-    fetchProducts()
-
-  },[])
-
-  const fetchProducts = async()=>{
-
-    try{
-
-      const res = await API.get("/products")
-
-      setProducts(res.data)
-
-    }catch(err){
-
-      console.log(err)
-
+  const fetchProducts = async () => {
+    try {
+      const res = await API.get("/products");
+      setProducts(res.data);
+    } catch (err) {
+      console.log(err);
     }
+  };
 
-  }
+  const addToCart = async (productId) => {
+    try {
+      await API.post("/cart", {
+        productId: productId,
+        size: "M",
+        quantity: 1
+      });
 
-  const addToCart = async(productId)=>{
+      alert("Added to Cart");
 
-    try{
-
-      await API.post("/cart",{
-        productId:productId,
-        size:"M",
-        quantity:1
-      })
-
-      alert("Added to Cart")
-
-    }catch(err){
-
-      alert("Login required")
-
-      navigate("/")
-
+    } catch (err) {
+      alert("Login required");
+      navigate("/login");
     }
+  };
 
-  }
+  return (
+    <>
+      <Navbar />   {}
 
-  return(
+      <div className="container mt-5">
 
-<div className="container mt-5">
+        <h2 className="mb-4 text-center">Clothing Collection</h2>
 
-<h2 className="mb-4 text-center">Clothing Collection</h2>
+        <div className="row">
 
-<div className="row">
+          {products.map((product) => (
 
-{products.map((product)=>(
+            <div className="col-md-3 mb-4" key={product._id}>
 
-<div className="col-md-3 mb-4" key={product._id}>
+              <div className="card h-100 shadow-sm">
 
-<div className="card h-100 shadow-sm">
+                <img
+                  src={product.image}
+                  className="card-img-top"
+                  style={{ height: "250px", objectFit: "cover" }}
+                  alt={product.name}
+                />
 
-<img
-src={product.image}
-className="card-img-top"
-style={{height:"250px",objectFit:"cover"}}
-/>
+                <div className="card-body d-flex flex-column">
 
-<div className="card-body d-flex flex-column">
+                  <h5 className="card-title">{product.name}</h5>
 
-<h5 className="card-title">{product.name}</h5>
+                  <p className="text-muted">{product.category}</p>
 
-<p className="text-muted">{product.category}</p>
+                  <h6 className="mb-3">${product.price}</h6>
 
-<h6 className="mb-3">${product.price}</h6>
+                  <div className="mt-auto">
 
-<div className="mt-auto">
+                    <Link
+                      to={`/product/${product._id}`}
+                      className="btn btn-outline-dark w-100 mb-2"
+                    >
+                      View Details
+                    </Link>
 
-<Link
-to={`/product/${product._id}`}
-className="btn btn-outline-dark w-100 mb-2"
->
+                    <button
+                      className="btn btn-dark w-100"
+                      onClick={() => addToCart(product._id)}
+                    >
+                      Add To Cart
+                    </button>
 
-View Details
+                  </div>
 
-</Link>
+                </div>
 
-<button
-className="btn btn-dark w-100"
-onClick={()=>addToCart(product._id)}
->
+              </div>
 
-Add To Cart
+            </div>
 
-</button>
+          ))}
 
-</div>
+        </div>
 
-</div>
-
-</div>
-
-</div>
-
-))}
-
-</div>
-
-</div>
-
-  )
-
+      </div>
+    </>
+  );
 }
 
-export default Products
+export default Products;   // ✅ FIXED EXPORT NAME
