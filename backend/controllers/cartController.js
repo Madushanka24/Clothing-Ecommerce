@@ -42,6 +42,7 @@ exports.addToCart = async (req, res) => {
       }
     } else {
       // Guest cart
+      const cartid = req.body.cartId || req.query.cartId;
       if (cartId) {
         cart = await Cart.findById(cartId);
       }
@@ -65,10 +66,12 @@ exports.addToCart = async (req, res) => {
     }
 
     await cart.save();
-
     const populatedCart = await Cart.findById(cart._id).populate("items.product");
 
-    res.json(populatedCart);
+    res.json({
+      cartId: cart._id,
+      cart: populatedCart,
+    });
 
   } catch (err) {
     console.error(err);

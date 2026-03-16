@@ -6,30 +6,23 @@ function Login() {
 
   const [email,setEmail] = useState("")
   const [password,setPassword] = useState("")
-
   const navigate = useNavigate()
 
   const handleSubmit = async(e) => {
     e.preventDefault()
 
     try {
-
       const res = await API.post("/auth/login",{email,password});
       localStorage.setItem("token",res.data.token)
 
       navigate("/products")
-
     } catch(err){
-
       alert("Login Failed")
-
     }
-
-  }
+  };
 
   return (
-
-<div className="container d-flex justify-content-center align-items-center vh-100">
+        <div className="container d-flex justify-content-center align-items-center vh-100">
 
 <div className="card p-4 shadow" style={{width:"400px"}}>
 

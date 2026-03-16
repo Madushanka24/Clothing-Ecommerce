@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import { useNavigate, Link } from "react-router-dom";
 
 function Cart() {
-  const [cart, setCart] = useState(null);
+  const [cart, setCart] = useState({ items: [] });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,18 +13,29 @@ function Cart() {
 
   const fetchCart = async () => {
     try {
-      const res = await API.get("/cart");
-      setCart(res.data);
+      const token = localStorage.getItem("token"); // logged-in JWT
+      const cartId = localStorage.getItem("cartId"); // guest cart
+
+      const res = token
+        ? await API.get("/cart") // logged-in user
+        : await API.get("/cart", { params: { cartId } }); // guest user
+
+      setCart(res.data.cart || { items: [] });
+
+      // Save guest cartId in localStorage if not logged in
+      if (!token && res.data.cartId) {
+        localStorage.setItem("cartId", res.data.cartId);
+      }
     } catch (err) {
-      alert("Please login first");
-      navigate("/");
+      console.error(err);
+      setCart({ items: [] }); // fallback
     }
   };
 
   const updateQuantity = async (itemId, quantity) => {
     try {
       const res = await API.put(`/cart/${cart._id}`, { itemId, quantity });
-      setCart(res.data);
+      setCart(res.data.cart || res.data); // handle both guest & logged-in
     } catch (err) {
       console.log(err);
     }
@@ -33,7 +44,7 @@ function Cart() {
   const removeItem = async (itemId) => {
     try {
       const res = await API.delete(`/cart/${cart._id}/${itemId}`);
-      setCart(res.data);
+      setCart(res.data.cart || res.data);
     } catch (err) {
       console.log(err);
     }
@@ -47,8 +58,10 @@ function Cart() {
     );
   };
 
+  // Loading state
   if (!cart || !cart.items) return <p className="text-center mt-5">Loading...</p>;
 
+  // Empty cart state
   if (cart.items.length === 0)
     return (
       <>
