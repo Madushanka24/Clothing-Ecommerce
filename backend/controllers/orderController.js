@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const nodemailer = require("nodemailer");
+const sendOrderConfirmationEmail = require("../utils/mailer");
 
 // MOCK CHECKOUT & SAVE ORDER
 exports.checkout = async (req, res) => {
